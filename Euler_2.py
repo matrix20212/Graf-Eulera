@@ -1,6 +1,16 @@
 import numpy as np
 import random
 from pyvis.network import Network
+import math
+
+def generate_points(num_points, radius):
+    points = []
+    for i in range(num_points):
+        angle = i * (2*math.pi) / num_points
+        x = radius * math.cos(angle)
+        y = radius * math.sin(angle)
+        points.append((x, y))
+    return points
 
 def generate_graph(n, p):
     A = np.zeros((n, n), dtype=int)
@@ -44,6 +54,8 @@ def make_eulerian(A):
 
 n = 10  # Romiar grafu
 p = 0.7  # prawdopodobieństwo
+radius = 300 # Promień okręgu na którym generowane są punkty
+points = generate_points(n, radius) # generowanie punktów na okręgu
 
 # Generowanie losowego grafu
 A = generate_graph(n, p)
@@ -70,7 +82,8 @@ file = open("graph.txt","r")
 # Generowanie wierzchołków
 color=["red","blue","green","#03fc73","#42270b","pink","purple","black","orange","#00bfff"]
 for i in range(n):   
-    g.add_node(i, label=str(i+1),color=color[i])
+    x, y = points[i]
+    g.add_node(i, label=str(i+1),color=color[i],x = x,y = y)
 
 j = 0
 i = 0
@@ -104,6 +117,6 @@ print("Gęstość grafu = " + str(round(D,3)))
 print(g.get_adj_list())
 
 g.hrepulsion(node_distance=300)
-g.toggle_physics(True)
+g.toggle_physics(False)
 g.barnes_hut()
 g.show('graph-visualization.html', True, False)
